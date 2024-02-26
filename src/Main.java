@@ -3,6 +3,8 @@ import java.util.Arrays;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
+// 백준 14503 1시도 통과
 public class Main {
     public static void main(String[] args) {
         int[] plusY = {-1,0,1,0};
