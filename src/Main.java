@@ -7,8 +7,6 @@ import java.util.Arrays;
 // 백준 14503 1시도 통과
 public class Main {
     public static void main(String[] args) {
-        int[] plusY = {-1,0,1,0};
-        int[] plusX = {0,1,0,-1};
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
         try{
@@ -16,47 +14,92 @@ public class Main {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
             String[] tmp = bf.readLine().split(" ");
-            int[][] arr = new int[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[1])];
-            tmp = bf.readLine().split(" ");
-            int x = Integer.parseInt(tmp[1]);
-            int y = Integer.parseInt(tmp[0]);
-            int direction = Integer.parseInt(tmp[2]);
+            int[][] arr = new int[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[0])];
+            int width = Integer.parseInt(tmp[1]);
+
             for(int i=0;i<arr.length;i++) {
                 tmp = bf.readLine().split(" ");
-                for(int j=0;j<tmp.length;j++) {
+                for(int j=0;j<arr.length;j++) {
                     arr[i][j] = Integer.parseInt(tmp[j]);
                 }
             }
-            int num = 0;
+            int ans = 0;
 
-            while(true) {
-                if(arr[y][x]==0) {
-                    // 현재 칸이 아직 청소되지 않은 경우, 현재 칸을 청소한다.
-                    arr[y][x]=2;
-                    num++;
-                } else if((arr[y][x+1]==0)||(arr[y][x-1]==0)||(arr[y+1][x]==0)||(arr[y-1][x]==0)) {
-                    // 현재 칸의 주변 4칸 중 청소되지 않은 빈 칸이 있는 경우
-                    if(--direction<0) direction = 3;
-                    int newY = y+plusY[direction];
-                    int newX = x+plusX[direction];
-                    if(arr[newY][newX]==0) {
-                        y = newY;
-                        x = newX;
-                    }
-                } else {
-                    // 현재 칸의 주변 4칸 중 청소되지 않은 빈 칸이 없는 경우
-                    int newY = y-plusY[direction];
-                    int newX = x-plusX[direction];
-                    if(arr[newY][newX]==1) {
-                        break;
+            for(int i=0;i<arr.length;i++) {
+                int l = 1;
+                for(int j=1;j<arr.length;j++) {
+                    if(arr[i][j-1]==arr[i][j]) {
+                        l++;
+                    } else if(arr[i][j-1]+1==arr[i][j]) {
+                        if(l>=width) {
+                            l=1;
+                        } else {
+                            l=-1;
+                            j = 101;
+                        }
+                    } else if(arr[i][j-1]-1==arr[i][j]) {
+                        l = 1;
+
+                        while(l<width) {
+                            j++;
+                            if(j>=arr.length||arr[i][j-1]!=arr[i][j]) {
+                                break;
+                            }
+                            l++;
+                        }
+                        if(l!=width) {
+                            l = -1;
+                            j= 101;
+                        } else {
+                            l = 0;
+                        }
                     } else {
-                        y = newY;
-                        x = newX;
+                        l = -1;
+                        j = 101;
                     }
+                }
+                if(l>=0) {
+                    ans++;
+                }
+
+                l = 1;
+                for(int j=1;j<arr.length;j++) {
+                    if(arr[j-1][i]==arr[j][i]) {
+                        l++;
+                    } else if(arr[j-1][i]+1==arr[j][i]) {
+                        if(l>=width) {
+                            l=1;
+                        } else {
+                            l=-1;
+                            j = 101;
+                        }
+                    } else if(arr[j-1][i]-1==arr[j][i]) {
+                        l = 1;
+
+                        while(l<width) {
+                            j++;
+                            if(j>=arr.length||arr[j-1][i]!=arr[j][i]) {
+                                break;
+                            }
+                            l++;
+                        }
+                        if(l!=width) {
+                            l = -1;
+                            j= 101;
+                        } else {
+                            l = 0;
+                        }
+                    } else {
+                        l = -1;
+                        j = 101;
+                    }
+                }
+                if(l>=0) {
+                    ans++;
                 }
             }
 
-            bw.write(""+num);
+            bw.write(""+ans);
             bw.flush();
             bw.close();
         }catch(IOException e){
