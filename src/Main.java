@@ -34,7 +34,7 @@ public class Main {
             }
             fun0(0);
             for(int i=0;i<arr.length;i++) {
-                //bw.write(Arrays.toString(arr[i])+"\n");
+                bw.write(Arrays.toString(arr[i])+"\n");
             }
             bw.write(""+min);
             bw.flush();
@@ -136,7 +136,7 @@ public class Main {
             fun1(x,y,false);
             fun2(x,y,false);
             fun3(x,y,false);
-            fun4(x,y,true);
+            fun4(x,y,false);
         }
     }
 
@@ -183,7 +183,7 @@ public class Main {
     static void fun5() {
         int tmp = 0;
         for(int i=0;i<arr.length;i++) {
-            //System.out.print(Arrays.toString(arr[i])+"\n");
+            System.out.print(Arrays.toString(arr[i])+"\n");
         }
 
         for(int i=0;i<arr.length;i++) {
@@ -192,6 +192,6 @@ public class Main {
             }
         }
         if(tmp<min) min = tmp;
-        //System.out.println("ans :"+tmp+"\n");
+        System.out.println("ans :"+tmp+"\n");
     }
 }
