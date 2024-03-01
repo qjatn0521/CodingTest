@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -6,9 +7,10 @@ import java.util.Arrays;
 
 // 백준 14503 1시도 통과
 public class Main {
-    static int[][] arr = new int[4][8];
-    static int[] at = {0,0,0,0};
-    static int[] tmpAt ={0,0,0,0};
+    static ArrayList<Integer> arrX = new ArrayList();
+    static ArrayList<Integer> arrY = new ArrayList();
+    static int[][] arr;
+    static int min = 65;
     public static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
@@ -16,30 +18,25 @@ public class Main {
             BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-            String[] tmp;
+            String[] tmp = bf.readLine().split(" ");
+            arr = new int[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[1])];
 
-            for(int i=0;i<4;i++) {
-                tmp = bf.readLine().split("");
-                for(int j=0;j<8;j++) {
-                    arr[i][j] = Integer.parseInt(tmp[j]);
-                }
-            }
-            int n = Integer.parseInt(bf.readLine());
-            for(int i=0;i<n;i++) {
+
+            for(int i=0;i<arr.length;i++) {
                 tmp = bf.readLine().split(" ");
-                int dir = Integer.parseInt(tmp[1]);
-                int num = Integer.parseInt(tmp[0])-1;
-                fun0(num,dir);
-                fun1(num,dir);
-                for(int j=0;j<4;j++) {
-                    if(tmpAt[j]>=0)
-                        at[j] = tmpAt[j];
-                    tmpAt[j] = -1;
+                for(int j=0;j<arr[0].length;j++) {
+                    arr[i][j] = Integer.parseInt(tmp[j]);
+                    if(arr[i][j]!=0 && arr[i][j]!=6) {
+                        arrX.add(j);
+                        arrY.add(i);
+                    }
                 }
-                //bw.write(i+":"+Arrays.toString(at)+"\n");
             }
-
-            bw.write((1*arr[0][at[0]]+2*arr[1][at[1]]+4*arr[2][at[2]]+8*arr[3][at[3]])+"");
+            fun0(0);
+            for(int i=0;i<arr.length;i++) {
+                //bw.write(Arrays.toString(arr[i])+"\n");
+            }
+            bw.write(""+min);
             bw.flush();
             bw.close();
         }catch(IOException e){
@@ -47,70 +44,154 @@ public class Main {
             System.out.println(e.getMessage());
         }
     }
-    static void fun0(int n,int dir) {
-        if(n==3) {
-            if(dir==1) {
-                tmpAt[n] = at[n]-1;
-            } else {
-                tmpAt[n] = at[n]+1;
+
+    static void fun0(int n) {
+        if(n==arrX.size()) {
+            fun5();
+            return;
+        }
+        int x = arrX.get(n);
+        int y = arrY.get(n);
+        int num = arr[y][x];
+        if(num==1) {
+            fun1(x,y,true);
+            fun0(n+1);
+            fun1(x,y,false);
+            fun2(x,y,true);
+            fun0(n+1);
+            fun2(x,y,false);
+            fun3(x,y,true);
+            fun0(n+1);
+            fun3(x,y,false);
+            fun4(x,y,true);
+            fun0(n+1);
+            fun4(x,y,false);
+        } else if(num==2) {
+            fun1(x,y,true);
+            fun2(x,y,true);
+            fun0(n+1);
+            fun1(x,y,false);
+            fun2(x,y,false);
+            fun3(x,y,true);
+            fun4(x,y,true);
+            fun0(n+1);
+            fun3(x,y,false);
+            fun4(x,y,false);
+        } else if(num==3) {
+            fun1(x,y,true);
+            fun3(x,y,true);
+            fun0(n+1);
+            fun1(x,y,false);
+            fun3(x,y,false);
+            fun1(x,y,true);
+            fun4(x,y,true);
+            fun0(n+1);
+            fun1(x,y,false);
+            fun4(x,y,false);
+            fun2(x,y,true);
+            fun3(x,y,true);
+            fun0(n+1);
+            fun2(x,y,false);
+            fun3(x,y,false);
+            fun2(x,y,true);
+            fun4(x,y,true);
+            fun0(n+1);
+            fun2(x,y,false);
+            fun4(x,y,false);
+        } else if(num==4) {
+            fun1(x,y,true);
+            fun2(x,y,true);
+            fun3(x,y,true);
+            fun0(n+1);
+            fun1(x,y,false);
+            fun2(x,y,false);
+            fun3(x,y,false);
+            fun1(x,y,true);
+            fun2(x,y,true);
+            fun4(x,y,true);
+            fun0(n+1);
+            fun1(x,y,false);
+            fun2(x,y,false);
+            fun4(x,y,false);
+            fun2(x,y,true);
+            fun3(x,y,true);
+            fun4(x,y,true);
+            fun0(n+1);
+            fun2(x,y,false);
+            fun3(x,y,false);
+            fun4(x,y,false);
+            fun1(x,y,true);
+            fun3(x,y,true);
+            fun4(x,y,true);
+            fun0(n+1);
+            fun1(x,y,false);
+            fun3(x,y,false);
+            fun4(x,y,false);
+        } else if(num==5) {
+            fun1(x,y,true);
+            fun2(x,y,true);
+            fun3(x,y,true);
+            fun4(x,y,true);
+            fun0(n+1);
+            fun1(x,y,false);
+            fun2(x,y,false);
+            fun3(x,y,false);
+            fun4(x,y,true);
+        }
+    }
+
+    static void fun1(int x, int y,boolean option) {
+        //오른쪽
+        while(x<arr[0].length && arr[y][x]!=6) {
+            if(arr[y][x]<=0) {
+                if(option) arr[y][x]--;
+                else arr[y][x]++;
             }
-
-            if(tmpAt[n]<0) tmpAt[n] = 7;
-            else if(tmpAt[n]>7) tmpAt[n]=0;
-            return;
+            x++;
         }
-        int at0 = at[n]+2>7 ? at[n]+2-8 : at[n]+2;
-        int at1 = at[n+1]-2<0 ? at[n+1]-2+8 : at[n+1]-2;
-        if(arr[n][at0]==arr[n+1][at1]) {
-            //fun0(n+1,dir);
-        } else {
-            fun0(n+1,dir*-1);
-        }
-
-        if(dir==1) {
-            tmpAt[n] = at[n]-1;
-        } else {
-            tmpAt[n] = at[n]+1;
-        }
-
-        if(tmpAt[n]<0) tmpAt[n] = 7;
-        else if(tmpAt[n]>7) tmpAt[n]=0;
-
-
     }
-    static void fun1(int n,int dir) {
-        if(n==0) {
-            return;
+    static void fun2(int x, int y,boolean option) {
+        //왼쪽
+        while(x>=0 && arr[y][x]!=6) {
+            if(arr[y][x]<=0) {
+                if(option) arr[y][x]--;
+                else arr[y][x]++;
+            }
+            x--;
         }
-        int at0 = at[n]-2<0 ? at[n]-2+8 : at[n]-2;
-        int at1 = at[n-1]+2>7 ? at[n-1]+2-8 : at[n-1]+2;
-        if(arr[n][at0]==arr[n-1][at1]) {
-            return;
-            //fun1(n-1,dir);
-        } else {
-            dir *=-1;
-            fun1(n-1,dir);
-        }
-
-        if(dir==1) {
-            tmpAt[n-1] = at[n-1]-1;
-        } else {
-            tmpAt[n-1] = at[n-1]+1;
-        }
-
-        if(tmpAt[n-1]<0) tmpAt[n-1] = 7;
-        else if(tmpAt[n-1]>7) tmpAt[n-1]=0;
     }
+    static void fun3(int x, int y,boolean option) {
+        //아래
+        while(y<arr.length && arr[y][x]!=6) {
+            if(arr[y][x]<=0) {
+                if(option) arr[y][x]--;
+                else arr[y][x]++;
+            }
+            y++;
+        }
+    }
+    static void fun4(int x, int y,boolean option) {
+        //위
+        while(y>=0 && arr[y][x]!=6) {
+            if(arr[y][x]<=0) {
+                if(option) arr[y][x]--;
+                else arr[y][x]++;
+            }
+            y--;
+        }
+    }
+    static void fun5() {
+        int tmp = 0;
+        for(int i=0;i<arr.length;i++) {
+            //System.out.print(Arrays.toString(arr[i])+"\n");
+        }
 
+        for(int i=0;i<arr.length;i++) {
+            for(int j=0;j<arr[0].length;j++) {
+                if(arr[i][j]==0) tmp++;
+            }
+        }
+        if(tmp<min) min = tmp;
+        //System.out.println("ans :"+tmp+"\n");
+    }
 }
-/*
-
-01100110
-10001111
-00011000
-01110001
-3
-3 -1
-3 1
-1 1
- */
