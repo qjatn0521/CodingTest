@@ -9,7 +9,13 @@ import java.util.Arrays;
 public class Main {
 
     static int[][] arr;
-    static ArrayList<Integer> directions = new ArrayList<>();
+    static int max;
+    static int ans = 5000000;
+    static ArrayList<Integer> homeLen = new ArrayList<>();
+    static ArrayList<Integer> ckX = new ArrayList<>();
+    static ArrayList<Integer> ckY = new ArrayList<>();
+    static ArrayList<Integer> homeX = new ArrayList<>();
+    static ArrayList<Integer> homeY = new ArrayList<>();
     public static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
@@ -18,81 +24,69 @@ public class Main {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
             String[] tmp = bf.readLine().split(" ");
-            arr = new int[101][101];
-            int n =Integer.parseInt(tmp[0]);
-            for(int i=0;i<n;i++) {
+            arr = new int[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[0])];
+            max = Integer.parseInt(tmp[1]);
+            for(int i=0;i<arr.length;i++) {
                 tmp = bf.readLine().split(" ");
-                directions.clear();
-                int tmpDir = Integer.parseInt(tmp[2]);
-                int tmpX = Integer.parseInt(tmp[0]);
-                int tmpY = Integer.parseInt(tmp[1]);
-                directions.add(tmpDir);
-                arr[tmpY][tmpX]++;
-                if(tmpDir == 0) {
-                    arr[tmpY][tmpX+1]++;
-                    tmpX+=1;
-                } else if(tmpDir == 1) {
-                    arr[tmpY-1][tmpX]++;
-                    tmpY-=1;
-                } else if(tmpDir == 2) {
-                    arr[tmpY][tmpX-1]++;
-                    tmpX-=1;
-                } else {
-                    arr[tmpY+1][tmpX]++;
-                    tmpY+=1;
-                }
-                fun0(tmpX,tmpY,Integer.parseInt(tmp[3]));
-            }
-            int ans = 0;
-            for(int i=0;i<arr.length-1;i++) {
-                //bw.write(Arrays.toString(arr[i])+"\n");
-                for(int j=0;j<arr.length-1;j++) {
-                    if(arr[i][j]>0 && arr[i][j+1]>0 && arr[i+1][j]>0 && arr[i+1][j+1]>0) {
-                        ans++;
+                for(int j=0;j<arr.length;j++) {
+                    arr[i][j] = Integer.parseInt(tmp[j]);
+                    if(arr[i][j] == 2) {
+                        ckY.add(i);
+                        ckX.add(j);
+                        arr[i][j] =0;
+                    } else if(arr[i][j]==1) {
+                        homeY.add(i);
+                        homeX.add(j);
+                        homeLen.add(1000000000);
                     }
                 }
+            }
+            for(int i=0;i<ckX.size()-max+1;i++) {
+                fun0(0,i);
             }
             bw.write(""+ans);
             bw.flush();
             bw.close();
         }catch(IOException e){
             e.printStackTrace();
-            System.out.println(e.getMessage());
         }
     }
 
-    static void fun0(int x,int y, int age) {
-        //System.out.println("\nx :"+x+",y : "+y+", age : "+age);
-        if(age<=0) return;
-        int curSize = directions.size();
-        for(int i=curSize-1;i>=0;i--) {
-            int tmpDir = directions.get(i);
-            if(tmpDir == 0) {
-                arr[y-1][x]++;
-                y-=1;
-                tmpDir+=1;
-            } else if(tmpDir == 1) {
-                arr[y][x-1]++;
-                x-=1;
-                tmpDir+=1;
-            } else if(tmpDir == 2) {
-                arr[y+1][x]++;
-                y+=1;
-                tmpDir+=1;
-            } else {
-                arr[y][x+1]++;
-                x+=1;
-                tmpDir=0;
+    static void fun0(int num,int at) {
+        int tmpY = ckY.get(at);
+        int tmpX = ckX.get(at);
+        ArrayList<Integer> homeTmpLen = new ArrayList<>();
+        for(int i=0;i<homeX.size();i++) {
+            homeTmpLen.add(homeLen.get(i));
+        }
+        fun1(tmpX,tmpY,at);
+        if(num==max-1)  {
+            fun2();
+        } else {
+            for(int i=at+1;i<ckX.size();i++) {
+                fun0(num+1,i);
             }
-            directions.add(tmpDir);
         }
-        fun0(x,y,age-1);
-    }
 
+        for(int i=0;i<homeY.size();i++) {
+            homeLen.set(i,homeTmpLen.get(i));
+        }
+    }
+    static void fun1(int x, int y,int at) {
+        for(int i=0;i<homeX.size();i++) {
+            int xLen = homeX.get(i) - x > 0 ? homeX.get(i) - x : x - homeX.get(i);
+            int yLen = homeY.get(i) - y > 0 ? homeY.get(i) - y : y - homeY.get(i);
+            int tmpLen = xLen+yLen;
+            if(homeLen.get(i) > tmpLen)  {
+                homeLen.set(i,tmpLen);
+            }
+        }
+    }
+    static void fun2() {
+        int sum =0;
+        for(int i=0;i<homeLen.size();i++) {
+            sum+= homeLen.get(i);
+        }
+        if(sum<ans) ans = sum;
+    }
 }
-/*
-3
-3 3 0 2
-4 2 1 3
-4 2 2 1
- */
