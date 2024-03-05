@@ -7,15 +7,8 @@ import java.util.Arrays;
 
 // 백준 14503 1시도 통과
 public class Main {
-
-    static int[][] arr;
-    static int max;
-    static int ans = 5000000;
-    static ArrayList<Integer> homeLen = new ArrayList<>();
-    static ArrayList<Integer> ckX = new ArrayList<>();
-    static ArrayList<Integer> ckY = new ArrayList<>();
-    static ArrayList<Integer> homeX = new ArrayList<>();
-    static ArrayList<Integer> homeY = new ArrayList<>();
+    static String[][][] arr;
+    static String[] colors = {"w","y","r","o","g","b"}; // 위, 아래, 앞, 뒤, 왼, 오
     public static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
@@ -24,27 +17,53 @@ public class Main {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
             String[] tmp = bf.readLine().split(" ");
-            arr = new int[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[0])];
-            max = Integer.parseInt(tmp[1]);
-            for(int i=0;i<arr.length;i++) {
+            arr = new String[6][3][3];
+            int n = Integer.parseInt(tmp[0]);
+            for(int i=0;i<n;i++) {
+                reset();
+                String tmp2 = bf.readLine();
                 tmp = bf.readLine().split(" ");
-                for(int j=0;j<arr.length;j++) {
-                    arr[i][j] = Integer.parseInt(tmp[j]);
-                    if(arr[i][j] == 2) {
-                        ckY.add(i);
-                        ckX.add(j);
-                        arr[i][j] =0;
-                    } else if(arr[i][j]==1) {
-                        homeY.add(i);
-                        homeX.add(j);
-                        homeLen.add(1000000000);
-                    }
+                for(int j=0;j<tmp.length;j++) {
+                    char dir = tmp[j].charAt(0);
+                    char clock = tmp[j].charAt(1);
+                    fun1(dir,clock);
                 }
+
+                for(int j=0;j<3;j++) {
+                    for(int k=0;k<3;k++) {
+                        bw.write(arr[0][j][k]);
+                    }
+                    bw.write("\n");
+                }/*
+                bw.write("\n");
+                for(int j=0;j<3;j++){
+                    for(int k=0;k<3;k++) {
+                        bw.write(arr[2][j][k]);
+                    }
+                    bw.write(" ");
+                    for(int k=0;k<3;k++) {
+                        bw.write(arr[5][j][k]);
+                    }
+                    bw.write(" ");
+                    for(int k=0;k<3;k++) {
+                        bw.write(arr[3][j][k]);
+                    }
+                    bw.write(" ");
+                    for(int k=0;k<3;k++) {
+                        bw.write(arr[4][j][k]);
+                    }
+
+                    bw.write("\n");
+                }
+                bw.write("\n");
+                for(int j=0;j<3;j++) {
+                    for(int k=0;k<3;k++) {
+                        bw.write(arr[1][j][2-k]);
+                    }
+                    bw.write("\n");
+                }
+                bw.write("\n======\n");*/
             }
-            for(int i=0;i<ckX.size()-max+1;i++) {
-                fun0(0,i);
-            }
-            bw.write(""+ans);
             bw.flush();
             bw.close();
         }catch(IOException e){
@@ -52,41 +71,161 @@ public class Main {
         }
     }
 
-    static void fun0(int num,int at) {
-        int tmpY = ckY.get(at);
-        int tmpX = ckX.get(at);
-        ArrayList<Integer> homeTmpLen = new ArrayList<>();
-        for(int i=0;i<homeX.size();i++) {
-            homeTmpLen.add(homeLen.get(i));
-        }
-        fun1(tmpX,tmpY,at);
-        if(num==max-1)  {
-            fun2();
-        } else {
-            for(int i=at+1;i<ckX.size();i++) {
-                fun0(num+1,i);
+    static void reset() {
+        for(int i=0;i<6;i++) {
+            for(int j=0;j<3;j++) {
+                for(int k=0;k<3;k++) {
+                    arr[i][j][k] = colors[i];
+                }
             }
         }
+    }
+    static void fun1(char dir, char clock) {
+        int[] address = new int[12];
+        int[] addressy = new int[12];
+        int[] addressx = new int[12];
+        if(dir=='U') {
+            fun2(0,clock);
+            if(clock=='+') {
+                fun3(2,0,2,0,0,address,addressy,addressx,0);
+                fun3(4,0,2,0,0,address,addressy,addressx,3);
+                fun3(3,0,2,0,0,address,addressy,addressx,6);
+                fun3(5,0,2,0,0,address,addressy,addressx,9);
+            } else {
+                fun3(2,0,2,0,0,address,addressy,addressx,0);
+                fun3(5,0,2,0,0,address,addressy,addressx,3);
+                fun3(3,0,2,0,0,address,addressy,addressx,6);
+                fun3(4,0,2,0,0,address,addressy,addressx,9);
+            }
+        } else if(dir=='D') {
+            fun2(1,clock);
+            if(clock=='+') {
+                fun3(2,2,2,2,0,address,addressy,addressx,0);
+                fun3(5,2,2,2,0,address,addressy,addressx,3);
+                fun3(3,2,2,2,0,address,addressy,addressx,6);
+                fun3(4,2,2,2,0,address,addressy,addressx,9);
+            } else {
+                fun3(2,2,2,2,0,address,addressy,addressx,0);
+                fun3(4,2,2,2,0,address,addressy,addressx,3);
+                fun3(3,2,2,2,0,address,addressy,addressx,6);
+                fun3(5,2,2,2,0,address,addressy,addressx,9);
+            }
+        } else if(dir=='F') {
+            fun2(2,clock);
+            if(clock=='+') {
+                fun3(0,2,0,2,2,address,addressy,addressx,0);
+                fun3(5,0,0,2,0,address,addressy,addressx,3);
+                fun3(1,2,0,2,2,address,addressy,addressx,6);
+                fun3(4,2,2,0,2,address,addressy,addressx,9);
+            } else {
+                fun3(0,2,2,2,0,address,addressy,addressx,0);
+                fun3(4,0,2,2,2,address,addressy,addressx,3);
+                fun3(1,2,2,2,0,address,addressy,addressx,6);
+                fun3(5,2,0,0,0,address,addressy,addressx,9);
+            }
+        } else if(dir=='B') {
+            fun2(3,clock);
+            // 완벽
+            if(clock=='+') {
+                fun3(0,0,2,0,0,address,addressy,addressx,0);
+                fun3(4,0,0,2,0,address,addressy,addressx,3);
+                fun3(1,0,2,0,0,address,addressy,addressx,6);
+                fun3(5,2,2,0,2,address,addressy,addressx,9);
+            } else {
+                fun3(0,0,0,0,2,address,addressy,addressx,0);
+                fun3(5,0,2,2,2,address,addressy,addressx,3);
+                fun3(1,0,0,0,2,address,addressy,addressx,6);
+                fun3(4,2,0,0,0,address,addressy,addressx,9);
+            }
+        } else if(dir=='L') {
+            fun2(4,clock);
+            if(clock=='+') {
+                fun3(0,0,0,2,0,address,addressy,addressx,0);
+                fun3(2,0,0,2,0,address,addressy,addressx,3);
+                fun3(1,2,2,0,2,address,addressy,addressx,6);
+                fun3(3,2,2,0,2,address,addressy,addressx,9);
+            } else {
+                fun3(0,2,0,0,0,address,addressy,addressx,0);
+                fun3(3,0,2,2,2,address,addressy,addressx,3);
+                fun3(1,0,2,2,2,address,addressy,addressx,6);
+                fun3(2,2,0,0,0,address,addressy,addressx,9);
+            }
+        } else if(dir=='R') {
+            fun2(5,clock);
+            if(clock=='+') {
+                fun3(0,2,2,0,2,address,addressy,addressx,0);
+                fun3(3,0,0,2,0,address,addressy,addressx,3);
+                fun3(1,0,0,2,0,address,addressy,addressx,6);
+                fun3(2,2,2,0,2,address,addressy,addressx,9);
+            } else {
+                fun3(0,0,2,2,2,address,addressy,addressx,0);
+                fun3(2,0,2,2,2,address,addressy,addressx,3);
+                fun3(1,2,0,0,0,address,addressy,addressx,6);
+                fun3(3,2,0,0,0,address,addressy,addressx,9);
+            }
+        }
+        fun4(address,addressy,addressx);
+    }
 
-        for(int i=0;i<homeY.size();i++) {
-            homeLen.set(i,homeTmpLen.get(i));
+    static void fun4(int[] address, int[] addressy, int[] addressx) {
+        String tmp1 = arr[address[9]][addressy[9]][addressx[9]];
+        String tmp2 = arr[address[10]][addressy[10]][addressx[10]];
+        String tmp3 = arr[address[11]][addressy[11]][addressx[11]];
+
+        for(int i=11;i>2;i--) {
+            arr[address[i]][addressy[i]][addressx[i]] = arr[address[i-3]][addressy[i-3]][addressx[i-3]];
         }
+        arr[address[0]][addressy[0]][addressx[0]] = tmp1;
+        arr[address[1]][addressy[1]][addressx[1]] = tmp2;
+        arr[address[2]][addressy[2]][addressx[2]] = tmp3;
     }
-    static void fun1(int x, int y,int at) {
-        for(int i=0;i<homeX.size();i++) {
-            int xLen = homeX.get(i) - x > 0 ? homeX.get(i) - x : x - homeX.get(i);
-            int yLen = homeY.get(i) - y > 0 ? homeY.get(i) - y : y - homeY.get(i);
-            int tmpLen = xLen+yLen;
-            if(homeLen.get(i) > tmpLen)  {
-                homeLen.set(i,tmpLen);
+
+    static void fun2(int n, char clock) {
+        String[][] tmp = new String[3][3];
+        if (clock == '+') {
+            for(int i=0;i<3;i++) {
+                for(int j=0;j<3;j++) {
+                    tmp[i][j] = arr[n][2-j][i];
+                }
+            }
+        } else {
+            for(int i=0;i<3;i++) {
+                for(int j=0;j<3;j++) {
+                    tmp[i][j] = arr[n][j][2-i];
+                }
+            }
+        }
+        for(int i=0;i<3;i++) {
+            for(int j=0;j<3;j++) {
+                arr[n][i][j] = tmp[i][j];
             }
         }
     }
-    static void fun2() {
-        int sum =0;
-        for(int i=0;i<homeLen.size();i++) {
-            sum+= homeLen.get(i);
+    static void fun3(int n, int startY, int startX, int endY, int exdX,int[] a, int[] aY, int[] aX, int index) {
+        for(int i=index;i<index+3;i++) {
+            a[i] = n;
+            if(startX==exdX) {
+                aX[i] = startX;
+                if(startY==2) {
+                    aY[i] = startY-i+index;
+                } else {
+                    aY[i] = startY+i-index;
+                }
+            } else{
+                aY[i] = startY;
+                if(startX==2) {
+                    aX[i] = startX-i+index;
+                } else {
+                    aX[i] = startX+i-index;
+                }
+            }
         }
-        if(sum<ans) ans = sum;
     }
 }
+/*
+2
+16
+U+ R+ R+
+16
+U+ R+ R+ F+
+ */
