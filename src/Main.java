@@ -1,16 +1,15 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 
-// 12:44 ~ 3:21 (좀 많이 놈)
+// 14:00 ~ 14:47
 public class Main {
-    static ArrayList<shark>[][] arr;
-    static ArrayList<shark> sharks;
+    static int[][] arr;
+    static int y;
+    static int x;
+    static int value;
     public static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
@@ -19,40 +18,21 @@ public class Main {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
             String[] tmp = bf.readLine().split(" ");
-            arr = new ArrayList[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[1])];
-            sharks = new ArrayList<>();
-            int n = Integer.parseInt(tmp[2]);
-            for(int i=0;i<n;i++) {
+            arr = new int[3][3];
+            y = Integer.parseInt(tmp[0])-1;
+            x = Integer.parseInt(tmp[1])-1;
+            value = Integer.parseInt(tmp[2]);
+
+            for(int i=0;i<3;i++) {
                 tmp = bf.readLine().split(" ");
-                sharks.add(new shark(Integer.parseInt(tmp[0])-1,Integer.parseInt(tmp[1])-1,Integer.parseInt(tmp[2]),Integer.parseInt(tmp[3]),Integer.parseInt(tmp[4])));
+                for(int j=0;j<3;j++)
+                    arr[i][j] = Integer.parseInt(tmp[j]);
             }
 
 
-            int ans = 0;
-            for(int i=0;i<arr[0].length;i++) {
-                shark s = null;
-                int remove = 0;
-                for(int j=0;j<sharks.size();j++) {
-                    if(i==sharks.get(j).x && (s==null || s.y>sharks.get(j).y)) {
-                        s=sharks.get(j);
-                        remove = j;
-                    }
-                }
-                if(s!=null) {
-                    ans+= s.size;
-                    sharks.remove(remove);
-                }
+            int ans = fun1(0);
 
-                fun1();
-                fun2();
-                for(int k=0;k<sharks.size();k++) {
-                    //bw.write("shark("+(k+1)+") : "+ sharks.get(k).y+", "+sharks.get(k).x+", "+sharks.get(k).size);
-                }
-                //bw.write("ans :"+ans+"\n");
-            }
-
-
-            bw.write(""+ans+"\n");
+            bw.write(""+ans);
             bw.flush();
             bw.close();
         }catch(IOException e){
@@ -60,100 +40,104 @@ public class Main {
         }
     }
 
-    static void fun1() {
-        for(int i=0;i<arr.length;i++) {
-            for(int j=0;j<arr[0].length;j++)
-                arr[i][j] = new ArrayList<>();
+    static int fun1(int time) {
+        //System.out.println("time : "+time);
+        for(int i=0;i< arr.length;i++) {
+            //System.out.println(Arrays.toString(arr[i]));
         }
-        //System.out.println("===============");
-        for(int i=0;i<sharks.size();i++) {
-            shark tmp = sharks.get(i);
-            //System.out.println(tmp.y+", "+ tmp.x+", d:"+ tmp.d+", s:"+ tmp.size);
-            if(tmp.d==1) {
-                int y = tmp.y - (tmp.s%(2*arr.length-2));
-                if(y < 0) {
-                    tmp.d =2;
-                    tmp.y = y*-1;
-                    if(tmp.y>= arr.length-1) {
-                        tmp.d = 1;
-                        tmp.y = 2*(arr.length-1) - tmp.y;
-                    }
-                } else {
-                    tmp.y = y;
-                }
-            } else if(tmp.d==3) {
-                int x = tmp.x + (tmp.s%(2*arr[0].length-2));
-                if(x >= arr[0].length) {
-                    tmp.d = 4;
-                    tmp.x =  2*(arr[0].length-1) - x;
-                    if(tmp.x < 0) {
-                        tmp.d = 3;
-                        tmp.x = tmp.x*-1;
-                    }
-                } else {
-                    tmp.x = x;
-                }
-            } else if(tmp.d==2) {
-                int y = tmp.y + (tmp.s%(2*arr.length-2));
-                if(y >= arr.length) {
-                    tmp.d =1;
-                    tmp.y = 2*(arr.length-1) - y;
-                    if(tmp.y<0) {
-                        tmp.d = 2;
-                        tmp.y = tmp.y*-1;
-                    }
-                } else {
-                    tmp.y = y;
-                }
-            } else if(tmp.d==4) {
-                int x = tmp.x - (tmp.s%(2*arr[0].length-2));
-                if(x < 0) {
-                    tmp.d = 3;
-                    tmp.x = x*-1;
-                    if(tmp.x >= arr[0].length-1) {
-                        tmp.d = 4;
-                        tmp.x =  2*(arr[0].length-1) - tmp.x;
-                    }
-                } else {
-                    tmp.x = x;
+        if(y< arr.length && x < arr[0].length&&arr[y][x]==value) return time;
+        else if(time>=100) return -1;
+        int max = 0;
+        if(arr.length>=arr[0].length) {
+            int[][] tmp = new int[arr.length][101];
+            ArrayList<data>[] tmpA = new ArrayList[arr.length];
+
+            for(int i=0;i<arr.length;i++) {
+                for(int j=0;j<arr[0].length;j++) {
+                    tmp[i][arr[i][j]]++;
                 }
             }
-            //System.out.println(tmp.y+", "+ tmp.x+", d:"+ tmp.d+", s:"+ tmp.s+"\n");
-            if(!arr[tmp.y][tmp.x].isEmpty() && arr[tmp.y][tmp.x].get(0).size < tmp.size) {
-                arr[tmp.y][tmp.x].add(0,tmp);
-            } else if(!arr[tmp.y][tmp.x].isEmpty() && arr[tmp.y][tmp.x].get(0).size >= tmp.size){
-                arr[tmp.y][tmp.x].add(tmp);
-            } else if(arr[tmp.y][tmp.x].isEmpty()) {
-                arr[tmp.y][tmp.x].add(tmp);
+            for(int i=0;i<arr.length;i++) {
+                int tmpMax = 0;
+                tmpA[i] = new ArrayList<data>();
+                for(int j=1;j<101;j++) {
+                    if(tmp[i][j]>0) {
+                        //System.out.println(tmp[i][j]);
+                        tmpA[i].add(new data(j,tmp[i][j]));
+                        tmpMax++;
+                    }
+                }
+                max = max>tmpMax? max : tmpMax;
+                Collections.sort(tmpA[i], new Comparator<data>() {
+                    @Override
+                    public int compare(data d1, data d2) {
+                        if (d1.how != d2.how) {
+                            return d1.how - d2.how; // how 가 작은 순으로 정렬
+                        } else {
+                            return d1.num - d2.num; // 같은 경우 num 이 작은 순으로 정렬
+                        }
+                    }
+                });
             }
+            arr = new int[arr.length>=100 ? 100: arr.length][max*2>=100 ? 100 : max*2];
 
-        }
-    }
-    static void fun2(){
-        for(int i=0;i<arr.length;i++) {
-            for(int j=0;j<arr[0].length;j++) {
-                for(int k=1;k<arr[i][j].size();k++) {
-                    sharks.remove(arr[i][j].get(k));
+            for(int i=0;i<arr.length;i++) {
+                for(int j=0;j<tmpA[i].size()&&j<50;j++) {
+                    data tmpData = tmpA[i].get(j);
+                    arr[i][2*j] = tmpData.num;
+                    arr[i][2*j+1] = tmpData.how;
+                }
+            }
+        } else {
+            int[][] tmp = new int[arr[0].length][101];
+            ArrayList<data>[] tmpA = new ArrayList[arr[0].length];
+
+            for(int i=0;i<arr[0].length;i++) {
+                for(int j=0;j<arr.length;j++) {
+                    tmp[i][arr[j][i]]++;
+                }
+            }
+            for(int i=0;i<arr[0].length;i++) {
+                int tmpMax = 0;
+                tmpA[i] = new ArrayList<data>();
+                for(int j=1;j<101;j++) {
+                    if(tmp[i][j]>0) {
+                        tmpA[i].add(new data(j,tmp[i][j]));
+                        tmpMax++;
+                    }
+                }
+                max = max>tmpMax? max : tmpMax;
+                Collections.sort(tmpA[i], new Comparator<data>() {
+                    @Override
+                    public int compare(data d1, data d2) {
+                        if (d1.how != d2.how) {
+                            return d1.how - d2.how; // how 가 작은 순으로 정렬
+                        } else {
+                            return d1.num - d2.num; // 같은 경우 num 이 작은 순으로 정렬
+                        }
+                    }
+                });
+            }
+            arr = new int[max*2>=100?100:max*2][arr[0].length>=100?100:arr[0].length];
+            for(int i=0;i<arr[0].length;i++) {
+                for(int j=0;j<tmpA[i].size()&&j<50;j++) {
+                    data tmpData = tmpA[i].get(j);
+                    arr[2*j][i] = tmpData.num;
+                    arr[2*j+1][i] = tmpData.how;
                 }
             }
         }
+        return fun1(time+1);
     }
-
-    static class shark{
-        public int y;
-        public int x;
-        public  int s;
-        public int d;
-        public int size;
-
-        public shark(int i, int i1, int i2, int i3, int i4) {
-            y = i;
-            x = i1;
-            s = i2;
-            d= i3;
-            size = i4;
+    static class data {
+        int num;
+        int how;
+        data(int num, int how){
+            this.how = how;
+            this.num = num;
         }
     }
+
 }
 /*
 
