@@ -7,9 +7,8 @@ import java.util.*;
 // 14:00 ~ 14:47
 public class Main {
     static int[][] arr;
-    static ArrayList<dataXY> virus = new ArrayList<dataXY>();
-    static dataXY[] selectVirus;
-    static int minTime = 100000000;
+    static int[] sum = new int[6];
+    static int ans = 10000000;
     public static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
@@ -19,19 +18,25 @@ public class Main {
 
             String[] tmp = bf.readLine().split(" ");
             arr = new int[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[0])];
-            selectVirus = new dataXY[Integer.parseInt(tmp[1])];
             for(int i=0;i< arr.length;i++) {
                 tmp = bf.readLine().split(" ");
                 for (int j = 0; j < arr.length; j++) {
                     arr[i][j] = Integer.parseInt(tmp[j]);
-                    if(arr[i][j]==2) virus.add(new dataXY(j,i));
+                    sum[5]+= arr[i][j];
                 }
             }
-            int ans = 0;
-            fun1(0,0);
-            if(minTime == 100000000) minTime = -1;
-
-            bw.write(""+minTime);
+            for(int y=0;y<arr.length;y++) {
+                for(int x=0;x<arr.length;x++) {
+                    for(int d1=1;y-d1>=0;d1++) {
+                        for(int d2=1;d1+d2+x<arr.length&&y+d2<arr.length;d2++) {
+                            fun1(x,y,d1,d2);
+                            //bw.write(x+", "+y+", "+d1+", "+d2+"\n");
+                        }
+                    }
+                }
+            }
+            //fun1(0,1,1,4);
+            bw.write(""+ans);
             bw.flush();
             bw.close();
         }catch(IOException e){
@@ -39,76 +44,52 @@ public class Main {
         }
     }
 
-    static void fun1(int n, int size) {
-        if(size == selectVirus.length) {
-            //System.out.println("size :"+size+", n : "+n);
-            int tmpTime = fun2();
-            minTime = minTime >tmpTime ? tmpTime : minTime;
-            return;
+    static void fun1(int x, int y, int d1, int d2) {
+        sum[0]=0;sum[1]=0;sum[2]=0;sum[3]=0;
+        for(int i=y-1;i>=0;i--) {
+            for(int k=0;k<x+(y-i)&&k<x+d1+1;k++) {
+                sum[0]+= arr[i][k];
+            }
         }
-        for(int i=n;i<virus.size();i++) {
-            selectVirus[size] = new dataXY(virus.get(i).x,virus.get(i).y);
-            fun1(i+1,size+1);
+        int min = sum[0];
+        int max = sum[0];
+        for(int i=y-d1+d2;i>=0;i--) {
+            int k = x+2*d1-(y-i)>=x+d1+1?x+2*d1-(y-i):x+d1;
+            k++;
+            for(;k<arr.length;k++) {
+                sum[1]+= arr[i][k];
+                //System.out.print("x,y: "+k+", "+i);
+            }
+            //System.out.println();
+        }
+        for(int i=y;i<arr.length;i++) {
+            for(int j=0;j<x+i-y&&j<x+d2;j++) {
+                sum[2]+= arr[i][j];
+            }
+        }
+        for(int i=y-d1+d2+1;i<arr.length;i++) {
+            int j=x+d1+d2+(y-d1+d2+1-i)<x+d2?x+d2:x+d1+d2+(y-d1+d2+1-i);
+            for(;j<arr.length;j++) {
+                sum[3]+= arr[i][j];
+            }
+        }
+        sum[4] = sum[5]-sum[0]-sum[1]-sum[2]-sum[3];
+        min = min>sum[1]?sum[1]:min;
+        max = max>sum[1]?max:sum[1];
+        min = min>sum[2]?sum[2]:min;
+        max = max>sum[2]?max:sum[2];
+        min = min>sum[3]?sum[3]:min;
+        max = max>sum[3]?max:sum[3];
+        min = min>sum[4]?sum[4]:min;
+        max = max>sum[4]?max:sum[4];
+
+        if(max-min<ans) {
+            ans = max-min;
+            //System.out.println("ans :"+x+", "+y+", "+d1+", "+d2);
+            //System.out.println(sum[0]+", "+sum[1]+", "+sum[2]+", "+sum[3]);
         }
     }
 
-    static int fun2() {
-        int [][]tmp = new int[arr.length][arr.length];
-        int sum = 0;
-        for(int i=0;i<arr.length;i++) {
-            for(int j=0;j<arr.length;j++) {
-                tmp[i][j] = arr[i][j];
-                if(tmp[i][j]!=0) sum++;
-            }
-        }
-        Queue<dataXY> tmp1 = new LinkedList<>();
-        for(int i=0;i<selectVirus.length;i++) {
-            tmp1.add(new dataXY(selectVirus[i].x,selectVirus[i].y));
-        }
-        int time = 0;
-        while(sum<arr.length* arr.length && !tmp1.isEmpty() && time<minTime) {
-            time++;
-            int size = tmp1.size();
-            for(int i=0;i<size;i++) {
-                dataXY tmpVirus = tmp1.poll();
-                if(tmpVirus.x-1>=0 && (tmp[tmpVirus.y][tmpVirus.x-1]==2 || tmp[tmpVirus.y][tmpVirus.x-1]==0)) {
-                    if(tmp[tmpVirus.y][tmpVirus.x-1]==0) sum++;
-                    tmp[tmpVirus.y][tmpVirus.x-1] = 3;
-                    tmp1.add(new dataXY(tmpVirus.x-1, tmpVirus.y));
-                }
-                if(tmpVirus.y-1>=0 && (tmp[tmpVirus.y-1][tmpVirus.x]==2 || tmp[tmpVirus.y-1][tmpVirus.x]==0)) {
-                    if(tmp[tmpVirus.y-1][tmpVirus.x]==0) sum++;
-                    tmp[tmpVirus.y-1][tmpVirus.x] = 3;
-                    tmp1.add(new dataXY(tmpVirus.x, tmpVirus.y-1));
-                }
-                if(tmpVirus.x+1<tmp.length && (tmp[tmpVirus.y][tmpVirus.x+1]==2 || tmp[tmpVirus.y][tmpVirus.x+1]==0)) {
-                    if(tmp[tmpVirus.y][tmpVirus.x+1]==0) sum++;
-                    tmp[tmpVirus.y][tmpVirus.x+1] = 3;
-                    tmp1.add(new dataXY(tmpVirus.x+1, tmpVirus.y));
-                }
-                if(tmpVirus.y+1<tmp.length && (tmp[tmpVirus.y+1][tmpVirus.x]==2 || tmp[tmpVirus.y+1][tmpVirus.x]==0)) {
-                    if(tmp[tmpVirus.y+1][tmpVirus.x]==0) sum++;
-                    tmp[tmpVirus.y+1][tmpVirus.x] = 3;
-                    tmp1.add(new dataXY(tmpVirus.x, tmpVirus.y+1));
-                }
-            }
-        }
-        //System.out.println("time : "+time+", size : "+sum);
-        for (int i=0;i< arr.length;i++) {
-            //System.out.println(Arrays.toString(tmp[i]));
-        }
-        if(sum!= arr.length* arr.length) return 100000000;
-
-        return time;
-    }
-    static class dataXY {
-        int x;
-        int y;
-        dataXY(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
 
 }
 /*
