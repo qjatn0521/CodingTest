@@ -4,11 +4,11 @@ import java.util.*;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 
-// 14:00 ~ 14:47
+// 15:05
 public class Main {
     static int[][] arr;
-    static int[] sum = new int[6];
-    static int ans = 10000000;
+    static Queue<Data>[][] arrQ;
+    static Data[] dataList;
     public static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
@@ -17,25 +17,26 @@ public class Main {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
             String[] tmp = bf.readLine().split(" ");
-            arr = new int[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[0])];
+            arr = new int[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[0])];;
+            arrQ = new Queue[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[0])];
+            int n = Integer.parseInt(tmp[1]);
+            dataList = new Data[n];
             for(int i=0;i< arr.length;i++) {
                 tmp = bf.readLine().split(" ");
                 for (int j = 0; j < arr.length; j++) {
                     arr[i][j] = Integer.parseInt(tmp[j]);
-                    sum[5]+= arr[i][j];
+                    arrQ[i][j] = new LinkedList<>();
                 }
             }
-            for(int y=0;y<arr.length;y++) {
-                for(int x=0;x<arr.length;x++) {
-                    for(int d1=1;y-d1>=0;d1++) {
-                        for(int d2=1;d1+d2+x<arr.length&&y+d2<arr.length;d2++) {
-                            fun1(x,y,d1,d2);
-                            //bw.write(x+", "+y+", "+d1+", "+d2+"\n");
-                        }
-                    }
-                }
+            for(int i=0;i<n;i++) {
+                tmp = bf.readLine().split(" ");
+                int y = Integer.parseInt(tmp[0])-1;
+                int x = Integer.parseInt(tmp[1])-1;
+                Data data = new Data(Integer.parseInt(tmp[2]),i+1,y,x);
+                dataList[i] = data;
+                arrQ[y][x].add(data);
             }
-            //fun1(0,1,1,4);
+            int ans = fun(0);
             bw.write(""+ans);
             bw.flush();
             bw.close();
@@ -43,50 +44,115 @@ public class Main {
             e.printStackTrace();
         }
     }
+    static int fun(int time) {
+        for(int i=0;i< dataList.length;i++) {
+            System.out.print("data("+dataList[i].value+") : "+dataList[i].y+","+dataList[i].x+","+dataList[i].dir+"     ");
+        }
 
-    static void fun1(int x, int y, int d1, int d2) {
-        sum[0]=0;sum[1]=0;sum[2]=0;sum[3]=0;
-        for(int i=y-1;i>=0;i--) {
-            for(int k=0;k<x+(y-i)&&k<x+d1+1;k++) {
-                sum[0]+= arr[i][k];
-            }
+        System.out.println();
+        if(time>8) return -1;
+        boolean pass = true;
+        Data data0 = dataList[0];
+        for(Data data: dataList) {
+            if(!(data0.y==data.y && data0.x==data.x)) pass = false;
         }
-        int min = sum[0];
-        int max = sum[0];
-        for(int i=y-d1+d2;i>=0;i--) {
-            int k = x+2*d1-(y-i)>=x+d1+1?x+2*d1-(y-i):x+d1;
-            k++;
-            for(;k<arr.length;k++) {
-                sum[1]+= arr[i][k];
-                //System.out.print("x,y: "+k+", "+i);
-            }
-            //System.out.println();
+        if(pass) return time;
+        for(int i=0;i<dataList.length;i++) {
+            fun1(dataList[i]);
         }
-        for(int i=y;i<arr.length;i++) {
-            for(int j=0;j<x+i-y&&j<x+d2;j++) {
-                sum[2]+= arr[i][j];
-            }
-        }
-        for(int i=y-d1+d2+1;i<arr.length;i++) {
-            int j=x+d1+d2+(y-d1+d2+1-i)<x+d2?x+d2:x+d1+d2+(y-d1+d2+1-i);
-            for(;j<arr.length;j++) {
-                sum[3]+= arr[i][j];
-            }
-        }
-        sum[4] = sum[5]-sum[0]-sum[1]-sum[2]-sum[3];
-        min = min>sum[1]?sum[1]:min;
-        max = max>sum[1]?max:sum[1];
-        min = min>sum[2]?sum[2]:min;
-        max = max>sum[2]?max:sum[2];
-        min = min>sum[3]?sum[3]:min;
-        max = max>sum[3]?max:sum[3];
-        min = min>sum[4]?sum[4]:min;
-        max = max>sum[4]?max:sum[4];
 
-        if(max-min<ans) {
-            ans = max-min;
-            //System.out.println("ans :"+x+", "+y+", "+d1+", "+d2);
-            //System.out.println(sum[0]+", "+sum[1]+", "+sum[2]+", "+sum[3]);
+
+        return fun(time+1);
+    }
+
+    static void fun1(Data data) {
+        int nextY=data.y;
+        int nextX=data.x;
+        int nextDir = data.dir;
+        if(data.dir==1) {
+            if(data.x==arr.length-1||arr[data.y][data.x+1]==2) {
+                nextX = data.x-1;
+                nextDir = 2;
+            } else nextX = data.x+1;
+        } else if(data.dir==2) {
+            if(data.x==0||arr[data.y][data.x-1]==2)  {
+                nextX = data.x+1;
+                nextDir = 1;
+            }
+            else nextX = data.x-1;
+        } else if(data.dir==3) {
+            if(data.y==0||arr[data.y-1][data.x]==2) {
+                nextY = data.y+1;
+                nextDir = 4;
+            }
+            else nextY = data.y-1;
+        } else if(data.dir==4) {
+            if(data.y==arr.length-1||arr[data.y+1][data.x]==2) {
+                nextY = data.y-1;
+                nextDir = 3;
+            }
+            else nextY = data.y+1;
+        }
+        data.dir = nextDir;
+        fun2(nextY,nextX,data);
+    }
+
+    static void fun2(int nextY, int nextX, Data data) {
+        //System.out.println("y:"+nextY+", x"+nextX);
+        if(nextY<0 || nextX<0 || nextY>=arr.length || nextX >= arr.length) return;
+        System.out.println();
+        for(int i=0;i< arr.length;i++) {
+            for(int j=0;j< arr.length;j++) {
+                System.out.print(arrQ[i][j].size()+" ");
+            }
+            System.out.println();
+        }
+        if(arr[nextY][nextX]==0) {
+            Iterator<Data> iterator = arrQ[data.y][data.x].iterator();
+            while(iterator.next()!=data);
+            iterator.remove();
+            data.y = nextY;
+            data.x = nextX;
+            arrQ[nextY][nextX].add(data);
+            while (iterator.hasNext()) {
+                Data element = iterator.next();
+                element.y = nextY;
+                element.x = nextX;
+                arrQ[nextY][nextX].add(element);
+                iterator.remove();
+            }
+        } else if(arr[nextY][nextX]==1) {
+            Iterator<Data> iterator = arrQ[data.y][data.x].iterator();
+            Stack<Data> tmp = new Stack<>();
+            while(iterator.next()!=data);
+            iterator.remove();
+            data.y = nextY;
+            data.x = nextX;
+            tmp.add(0,data);
+            while (iterator.hasNext()) {
+                Data element = iterator.next();
+                element.y = nextY;
+                element.x = nextX;
+                tmp.add(0,element);
+                iterator.remove();
+            }
+            for(int i=0;i<tmp.size();i++) {
+                Data tmpData = tmp.get(i);
+                arrQ[nextY][nextX].add(tmpData);
+            }
+        }
+    }
+
+    static class Data{
+        int dir;
+        int value;
+        int y;
+        int x;
+        Data (int dir, int value,int y, int x) {
+            this.dir = dir;
+            this.value = value;
+            this.y = y;
+            this.x = x;
         }
     }
 
