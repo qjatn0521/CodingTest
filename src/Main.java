@@ -9,6 +9,7 @@ public class Main {
     static int[][] arr;
     static Queue<Data>[][] arrQ;
     static Data[] dataList;
+    static boolean pass =false;
     public static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
@@ -44,24 +45,16 @@ public class Main {
             e.printStackTrace();
         }
     }
-    static int fun(int time) {
+    static int fun(int time) {/*
         for(int i=0;i< dataList.length;i++) {
             System.out.print("data("+dataList[i].value+") : "+dataList[i].y+","+dataList[i].x+","+dataList[i].dir+"     ");
         }
-
-        System.out.println();
-        if(time>8) return -1;
-        boolean pass = true;
-        Data data0 = dataList[0];
-        for(Data data: dataList) {
-            if(!(data0.y==data.y && data0.x==data.x)) pass = false;
-        }
+*/
+        if(time>9) return -1;
         if(pass) return time;
         for(int i=0;i<dataList.length;i++) {
             fun1(dataList[i]);
         }
-
-
         return fun(time+1);
     }
 
@@ -98,15 +91,15 @@ public class Main {
     }
 
     static void fun2(int nextY, int nextX, Data data) {
-        //System.out.println("y:"+nextY+", x"+nextX);
-        if(nextY<0 || nextX<0 || nextY>=arr.length || nextX >= arr.length) return;
+        /*System.out.println("y:"+nextY+", x"+nextX);
         System.out.println();
         for(int i=0;i< arr.length;i++) {
             for(int j=0;j< arr.length;j++) {
                 System.out.print(arrQ[i][j].size()+" ");
             }
             System.out.println();
-        }
+        }*/
+        if(nextY<0 || nextX<0 || nextY>=arr.length || nextX >= arr.length) return;
         if(arr[nextY][nextX]==0) {
             Iterator<Data> iterator = arrQ[data.y][data.x].iterator();
             while(iterator.next()!=data);
@@ -141,6 +134,7 @@ public class Main {
                 arrQ[nextY][nextX].add(tmpData);
             }
         }
+        if(arrQ[nextY][nextX].size()>3) pass = true;
     }
 
     static class Data{
