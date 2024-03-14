@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
-        try{
+        try {
             BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
@@ -19,32 +19,33 @@ public class Main {
             arr = new int[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[1])];
             int n = Integer.parseInt(tmp[2]);
 
-            for(int i=0;i<arr.length;i++) {
+            for (int i = 0; i < arr.length; i++) {
                 tmp = bf.readLine().split(" ");
                 for (int j = 0; j < arr[0].length; j++) {
                     arr[i][j] = Integer.parseInt(tmp[j]);
                 }
             }
 
-            for(int i=0;i<n;i++) {
+            for (int i = 0; i < n; i++) {
                 tmp = bf.readLine().split(" ");
-                fun(Integer.parseInt(tmp[0]),Integer.parseInt(tmp[1]),Integer.parseInt(tmp[2]));
+                fun(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]));
             }
             int ans = 0;
-            for(int i=0;i< arr.length;i++) {
+            for (int i = 0; i < arr.length; i++) {
                 //bw.write(Arrays.toString(arr[i]));
                 for (int j = 0; j < arr[0].length; j++) {
-                    ans+=arr[i][j];
+                    ans += arr[i][j];
                 }
                 //bw.write("\n");
             }
-            bw.write(""+ans);
+            bw.write("" + ans);
             bw.flush();
             bw.close();
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     static void fun(int x, int d, int k) {
         //System.out.println("=====================");
         pass = true;
@@ -143,12 +144,3 @@ public class Main {
 
 
 }
-/*
-3 3 3
-2 2 1
-1 1 2
-2 2 2
-2 0 1
-2 1 2
-3 0 2
- */
