@@ -18,10 +18,10 @@ public class P5_2568 {
             BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-            String[] tmp = bf.readLine().split("");
-            int n = Integer.parseInt(tmp[0]);
+            String[] tmp;
+            int n = Integer.parseInt(bf.readLine());
             arr1 = new int[500001];
-            dp = new int[n];
+            dp = new int[n+1];
             arr2 = new int[500001];
             Queue<Integer> dpQ[] = new Queue[n];
 
@@ -66,8 +66,8 @@ public class P5_2568 {
             }
             Arrays.sort(dp);
             System.out.println(n-max);
-
-            int j =n-max-1;
+           // System.out.println(Arrays.toString(dp));
+            int j =n-max;
             for(int i=0;i<500001;i++) {
                 if(arr1[i]>0) {
                     //System.out.println("dp : "+dp[j]+", arr : "+i);
