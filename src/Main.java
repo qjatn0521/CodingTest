@@ -15,30 +15,14 @@ public class Main {
             BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-            String[] tmp = bf.readLine().split(" ");
-            arr = new int[Integer.parseInt(tmp[0])][Integer.parseInt(tmp[1])];
-            int n = Integer.parseInt(tmp[2]);
+            float a = 1.0f;
+            float sum = 0;
 
-            for (int i = 0; i < arr.length; i++) {
-                tmp = bf.readLine().split(" ");
-                for (int j = 0; j < arr[0].length; j++) {
-                    arr[i][j] = Integer.parseInt(tmp[j]);
-                }
-            }
 
-            for (int i = 0; i < n; i++) {
-                tmp = bf.readLine().split(" ");
-                fun(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]));
+            for(int i=0;i<17000000;i++) {
+                sum+=a;
             }
-            int ans = 0;
-            for (int i = 0; i < arr.length; i++) {
-                //bw.write(Arrays.toString(arr[i]));
-                for (int j = 0; j < arr[0].length; j++) {
-                    ans += arr[i][j];
-                }
-                //bw.write("\n");
-            }
-            bw.write("" + ans);
+            System.out.println(sum);
             bw.flush();
             bw.close();
         } catch (IOException e) {
